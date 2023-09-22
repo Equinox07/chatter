@@ -1,10 +1,11 @@
 <template>
     <div>
-        Message Item
+        {{message.user.name}}: {{message.message}}
     </div>
 </template>
-<script>
-    export default {
+<script setup>
 
-    }
+   const props = defineProps({
+        message: Object
+   })
 </script>

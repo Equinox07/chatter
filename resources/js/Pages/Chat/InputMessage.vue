@@ -1,12 +1,13 @@
 <script setup>
 import axios from 'axios';
-import { defineProps, defineComponent } from 'vue';
+import { defineProps, defineComponent, ref } from 'vue';
   const props = defineProps({
     room : Object
   })
   const emits = defineEmits(['messageSent'])
 
   var message = ""
+  var messages = ref({})
 
 //   const { room } = toRefs(props)
 
@@ -19,7 +20,7 @@ import { defineProps, defineComponent } from 'vue';
     })
     .then(response => {
         if (response.status == 201) {
-            message = ''
+            message = ""
             emits('messageSent')
         }
         console.log(response.data);

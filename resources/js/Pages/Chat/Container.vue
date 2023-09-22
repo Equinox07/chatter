@@ -29,7 +29,7 @@ import { onMounted, ref } from 'vue';
 
 let chatRooms = ref([]);
 let currentRoom = ref({});
-let messages = ref({});
+let messages = ref([]);
 
 async function getRooms() {
    await axios.get('/chat/rooms')
@@ -42,15 +42,14 @@ async function getRooms() {
 }
 
 function setRoom(room){
-    currentRoom = room
-    console.log(currentRoom);
-    // getMessages()
+    currentRoom.value = room
+    // console.log(currentRoom);
 }
 
 function getMessages(){
-    axios.get('/chat/rooms/' + currentRoom.id + '/messages')
+    axios.get('/chat/rooms/' + currentRoom.value.id + '/messages')
     .then(response => {
-        messages = response.data
+        messages.value = response.data
     }).catch(err => {
         console.log(err);
     })
@@ -74,9 +73,9 @@ onMounted(() => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                     <!-- <Welcome /> -->
-                    <MessageContainer />
+                    <MessageContainer :messages="messages" />
                     <!-- {{ chatRooms }} -->
-                    <InputMessage :room="currentRoom" />
+                    <InputMessage :room="currentRoom" @message-sent="getMessages()" />
                 </div>
             </div>
         </div>
