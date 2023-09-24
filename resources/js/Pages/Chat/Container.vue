@@ -4,7 +4,8 @@ import Welcome from '@/Components/Welcome.vue';
 import MessageContainer from './MessageContainer.vue';
 import InputMessage from './InputMessage.vue';
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch, reactive, watchEffect } from 'vue';
+import ChatRoomSelection from './ChatRoomSelection.vue';
 // export default {
 //     data() {
 //         return {
@@ -28,7 +29,8 @@ import { onMounted, ref } from 'vue';
 
 
 let chatRooms = ref([]);
-let currentRoom = ref({});
+let currentRoom = reactive({});
+let someRoom = reactive({});
 let messages = ref([]);
 
 async function getRooms() {
@@ -42,18 +44,45 @@ async function getRooms() {
 }
 
 function setRoom(room){
-    currentRoom.value = room
+    // console.log("Room change", room);
+    // var anotherRoom = ''
+    // if (!room.id) {
+    //     var anotherRoom = room.value
+    // }
+    // console.log("Another change", anotherRoom);
+    currentRoom = room
+    someRoom.value = room
+    // console.log("Another room", currentRoom);
+    getMessages()
     // console.log(currentRoom);
 }
 
 function getMessages(){
-    axios.get('/chat/rooms/' + currentRoom.value.id + '/messages')
+    axios.get('/chat/rooms/' + currentRoom.id + '/messages')
     .then(response => {
         messages.value = response.data
     }).catch(err => {
         console.log(err);
     })
 }
+
+function connectIO(){
+    console.log("Checking current room Id", currentRoom.id);
+    if (currentRoom.id) {
+        let vm = this
+        getMessages()
+        window.Echo.private("chat." + currentRoom.id)
+            .listen("NewChatMessage", (e) => {
+            console.log("Fetching messages...");
+            getMessages();
+        })
+    }
+}
+
+watch(someRoom, (newRoom, oldRoom) =>{
+    console.log("New Room", newRoom);
+   connectIO()
+});
 
 onMounted(() => {
     getRooms();
@@ -65,7 +94,12 @@ onMounted(() => {
     <AppLayout title="Chat">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Chat
+                <ChatRoomSelection
+                v-if="currentRoom.id"
+                :rooms="chatRooms"
+                :currentRoom="currentRoom"
+                @roomChanged="setRoom($event)"
+                />
             </h2>
         </template>
 

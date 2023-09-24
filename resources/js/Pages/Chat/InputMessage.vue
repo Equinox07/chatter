@@ -23,7 +23,7 @@ import { defineProps, defineComponent, ref } from 'vue';
             message = ""
             emits('messageSent')
         }
-        console.log(response.data);
+        // console.log(response.data);
         messages = response.data
     }).catch(err => {
         console.log(err);
