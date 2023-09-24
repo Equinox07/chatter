@@ -22,13 +22,17 @@ class ChatController extends Controller
                 ->get();
     }
 
-    public function newMessage(Request $request, $roomId)
+    public function newMessage(Request $request, ChatRoom $roomId)
     {
+        // $room = ChatRoom::find($roomId)->slug;
+
         $newMessage = new ChatMessage();
         $newMessage->user_id = Auth::id();
-        $newMessage->chat_room_id = $roomId;
+        $newMessage->chat_room_id = $roomId->id;
+        $newMessage->slug = $roomId->slug;
         $newMessage->message = $request->message;
         $newMessage->save();
+
 
         broadcast(new NewChatMessage($newMessage))->toOthers();
 

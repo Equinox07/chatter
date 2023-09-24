@@ -32,15 +32,15 @@ class NewChatMessage implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('chat.'.$this->chatMessage->chat_room_id ),
+            new PrivateChannel('chat.'.$this->chatMessage->slug ),
         ];
     }
 
 
-    public function broadcastWith(): array
-    {
-        return [
-            'additionalData' => "Use for anything"
-        ];
-    }
+    // public function broadcastWith(): array
+    // {
+    //     return [
+    //         'additionalData' => "Use for anything"
+    //     ];
+    // }
 }

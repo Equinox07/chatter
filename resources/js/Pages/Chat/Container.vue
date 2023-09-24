@@ -71,7 +71,7 @@ function connectIO(){
     if (currentRoom.id) {
         let vm = this
         getMessages()
-        window.Echo.private("chat." + currentRoom.id)
+        window.Echo.private("chat." + currentRoom.slug)
             .listen("NewChatMessage", (e) => {
             console.log("Fetching messages...");
             getMessages();
