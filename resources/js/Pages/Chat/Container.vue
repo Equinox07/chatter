@@ -30,7 +30,7 @@ import ChatRoomSelection from './ChatRoomSelection.vue';
 
 let chatRooms = ref([]);
 let currentRoom = reactive({});
-let someRoom = reactive({});
+let someRoom = ref("");
 let messages = ref([]);
 
 async function getRooms() {
@@ -79,8 +79,17 @@ function connectIO(){
     }
 }
 
+function disconnectIO(room){
+    window.Echo.leave("chat." + room.slug);
+}
+
 watch(someRoom, (newRoom, oldRoom) =>{
-    console.log("New Room", newRoom);
+    if (oldRoom.id) {
+        console.log("Disconnecting from this tour....", oldRoom.name);
+        disconnectIO(oldRoom)
+    }
+    // console.log("New Room", newRoom);
+    // console.log("Old Room", oldRoom);
    connectIO()
 });
 
